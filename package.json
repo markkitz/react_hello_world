@@ -1,7 +1,6 @@
 {
   "name": "react_hello_world",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,5 +14,10 @@
   "bugs": {
     "url": "https://github.com/markkitz/react_hello_world/issues"
   },
-  "homepage": "https://github.com/markkitz/react_hello_world#readme"
+  "homepage": "https://github.com/markkitz/react_hello_world#readme",
+  "dependencies": {
+    "express": "^4.13.3"
+  },
+  "devDependencies": {},
+  "description": ""
 }
