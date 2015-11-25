@@ -59,15 +59,15 @@ class ChannelSection extends React.Component {
 		super(props);
 		this.state = {
 			channels:	[
-				{name: 'Hardware Support'},
-				{name: 'Software Support'}	
+				{name: 'Hardware Support', selected: false},
+				{name: 'Software Support', selected: false}	
 			]
 		};
 	}
 	addChannel(name){
 		console.log("addChannel");
 		let {channels} = this.state;
-		channels.push({name:name});
+		channels.push({name:name, selected:false});
 		this.setState({channels:channels});
 	}
 	render(){
