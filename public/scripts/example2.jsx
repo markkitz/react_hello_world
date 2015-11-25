@@ -15,21 +15,22 @@ const todo = (state, action) => {
 			};
 		default:
 			return state;
-	}	
+	}
 };
 const todos = (state = [], action) => {
 	switch (action.type) {
 		case 'ADD_TODO': 
 			return [ ...state, todo(undefined, action)];
+		case 'REMOVE_TODO':
+			console.log('remove todo' + action.id);
+			return state;
 		case 'TOGGLE_TODO': 
 			return state.map(t => todo(t, action));
 		default:
 			return state;
-	}
-	
+	}	
 };
-const visibilityFilter  = (
-	state = ' SHOW_ALL', action) => 
+const visibilityFilter  = (state ='SHOW_ALL', action) => 
 	{
 		switch (action.type) {
 			case 'SET_VISIBILITY_FILTER' : 
@@ -61,7 +62,10 @@ class TodoApp extends Component {
 				</button>
 				<ul>
 				{this.props.todos.map(todo=>
-					<li key={todo.id}>
+					<li key={todo.id} onClick={() => 
+					{
+						store.dispatch({type: 'REMOVE_TODO', id: todo.id});
+					}}>
 						{todo.text}
 					</li>
 				)}
@@ -73,10 +77,8 @@ class TodoApp extends Component {
 
 const render = () => {
 	ReactDOM.render(
-		<TodoApp todos={store.getState().todos} />,
-		document.getElementById('root')
-	);
-	
+		<TodoApp todos={store.getState().todos} />, document.getElementById('root')
+	);	
 };
 store.subscribe(render);
 render();
