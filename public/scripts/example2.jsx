@@ -23,7 +23,11 @@ const todos = (state = [], action) => {
 			return [ ...state, todo(undefined, action)];
 		case 'REMOVE_TODO':
 			console.log('remove todo' + action.id);
-			return state;
+
+			var newState = state.filter( (todo) => { return todo.id != action.id;});
+
+			console.log(newState);
+			return newState;
 		case 'TOGGLE_TODO': 
 			return state.map(t => todo(t, action));
 		default:
@@ -40,8 +44,19 @@ const visibilityFilter  = (state ='SHOW_ALL', action) =>
 		}
 	};
 	
+const user = (state = null, action) => 
+{
+	switch(action.type){
+		case 'SET_USER':
+			return action.user;
+		default:
+			return state;
+	}
+}
+
+	
 const { combineReducers} = Redux;
-const todoApp = combineReducers({todos, visibilityFilter});
+const todoApp = combineReducers({todos, visibilityFilter, user});
 const {createStore} = Redux;
 const store = createStore(todoApp);
 
@@ -49,6 +64,7 @@ const {Component } = React;
 let nextTodoId = 0;
 class TodoApp extends Component {
 	render() {
+		console.log("PROPS", this.props);
 		return(
 			<div>
 				<button onClick={() => {
@@ -66,10 +82,13 @@ class TodoApp extends Component {
 					{
 						store.dispatch({type: 'REMOVE_TODO', id: todo.id});
 					}}>
-						{todo.text}
+						{todo.text} {todo.id}
 					</li>
 				)}
 				</ul>
+				{this.props.user !=null? <p>{this.props.user.longName}</p>:'null'}			
+				
+				
 			</div>
 		)
 	}
@@ -77,8 +96,20 @@ class TodoApp extends Component {
 
 const render = () => {
 	ReactDOM.render(
-		<TodoApp todos={store.getState().todos} />, document.getElementById('root')
+		<TodoApp todos={store.getState().todos} user={store.getState().user} />, document.getElementById('root')
 	);	
 };
 store.subscribe(render);
+store.dispatch({type:'ADD_TODO', text: 'First', id:nextTodoId++});
+store.dispatch({type:'ADD_TODO', text: 'Second', id:nextTodoId++});
+store.dispatch({type:'ADD_TODO', text: 'Third', id:nextTodoId++});
+console.log('Current state:', store.getState());
+console.log('----------SET_VISIBILITY_FILTER-----------');
+store.dispatch({type:'SET_VISIBILITY_FILTER', filter:'SHOW_COMPLETED'});
+console.log('Current state:', store.getState());
+console.log('---------------------');
+console.log('--------SET_USER-------------');
+store.dispatch({type:'SET_USER', user:{userName:'markk', longName:'Mark Kitz'}});
+console.log('Current state:', store.getState());
+console.log('---------------------');
 render();
