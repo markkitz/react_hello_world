@@ -1,12 +1,4 @@
 "use scrict";
-var json = [
-  {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
-  {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
-  {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
-  {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
-  {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
-  {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
-];
 
 const ProductRow = ({name, price, stocked}) => {
 	if(stocked === false)
@@ -22,17 +14,15 @@ const ProductCategoryRow = ({category}) => {
 		return(<tr><td colSpan='2' style={{fontWeight:'bold'}}>{category}</td></tr>);	
 }
 
+const ProductTable = ({searchFilter, products}) => {
 
-
-const ProductTable = React.createClass({
-	render:function(){	
 		
 			var lastCategory = '';
 			var rows = [];
 			var key = 0;
-			this.props.products.forEach(product =>	
+			products.forEach(product =>	
 			{
-				if(product.name.indexOf(this.props.filterText) === -1 || (!product.stocked && this.props.inStockOnly))
+				if(product.name.indexOf(searchFilter.filterText) === -1 || (!product.stocked && searchFilter.inStockOnly))
 				{
 					return;
 				}
@@ -51,18 +41,18 @@ const ProductTable = React.createClass({
 						{rows}
 					</tbody>
 				</table>);
-	}
-});
+	
+}
 const SearchBar = React.createClass(
 	{
 		handleChange:function() {
-			
+			this.props.onUserInput(this.refs.filterTextInput.value, this.refs.inStockOnlyInput.checked);
 		},
 		render: function(){
 			console.log("search bar", this.props);
 			return( 
 			<div>
-				<input type='text' value={this.props.searchFilter.filterText} onChange={this.handleChange} />
+				<input type='text' placeholder="Search ..." ref="filterTextInput" value={this.props.searchFilter.filterText} onChange={this.handleChange} />
 				<div><input type='checkbox' ref="inStockOnlyInput" checked={this.props.searchFilter.inStockOnly}  onChange={this.handleChange}  /> only show products in stock</div>				
 			</div>);
 		}
@@ -96,6 +86,8 @@ const FilteredProductTable = React.createClass(
 		handleUserInput: function(filterText, inStockOnly) {
 			console.log('filter search');			
 			store.dispatch({type:'SET_SEARCH_FILTER', filterText, inStockOnly});
+			console.log('store...', store.getState());
+			this.forceUpdate();
 		},
 		handleAddItem: function(itemText) {
 			json.push({category: "Electronics", price: "$199.99", stocked: true, name: itemText});
@@ -104,14 +96,23 @@ const FilteredProductTable = React.createClass(
 		render: function(){
 			return(
 				<div>
-					<SearchBar searchFilter={this.props.searchFilter} onUserInput={this.handleUserInput} />
-					<ProductTable products={this.props.products}  filterText={this.state.filterText} inStockOnly={this.state.inStockOnly}  />
+					<SearchBar searchFilter={store.getState().searchFilter} onUserInput={this.handleUserInput} />
+					<ProductTable products={this.props.products}  searchFilter={store.getState().searchFilter} />
 					<AddItemForm onAddItem={this.handleAddItem} />
 				</div>
 			);
 		}
 	}	
 );
+var json = [
+  {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
+  {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
+  {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
+  {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
+  {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
+  {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
+];
+
 ////////////////////////////////////////////////////////////////
 ///////// REDUCERS /////////////////////////////////////////////
 const searchFilter = (state = {filterText:'', inStockOnly:false}, action) => {
@@ -142,24 +143,21 @@ const products = (state = json, action) => {
 }
 
 
-//const {combineReducers} = Redux;
+
 //const productsApp = combineReducers({searchFilter});
 const {createStore} = Redux;
 const {combineReducers} = Redux;
-const reducers = combineReducers({products, searchFilter});
-console.log(reducers);
-let store = createStore(reducers );
+const productsApp = combineReducers({products, searchFilter});
+let store = createStore(productsApp );
 
-store.dispatch({type: 'ADD_PRODUCT', name:'test1', category:'Testers', price:'$99.99', inStock:true});
-store.dispatch({type: 'ADD_PRODUCT', name:'test1', category:'Testers', price:'$99.99', inStock:true});
+store.dispatch({type: 'ADD_PRODUCT', name:'test1', category:'Testers', price:'$99.99', stocked:true});
+store.dispatch({type: 'ADD_PRODUCT', name:'test1', category:'Testers', price:'$99.99', stocked:true});
 store.dispatch({type: 'SET_SEARCH_FILTER', filterText:'test', inStockOnly:true});
 console.log(store.getState());
 
 
 
-ReactDOM.render(
-	
-	<FilteredProductTable products={store.getState().products} searchFilter={store.getState().searchFilter} />, document.getElementById('root')
-	
+ReactDOM.render(	
+	<FilteredProductTable products={store.getState().products}  />, document.getElementById('root')	
 	);
 	

@@ -1,4 +1,3 @@
-const {Component} = React;
 const {connect} = ReactRedux;
 
 const  Todo = ({text, completed, onClick}) =>
@@ -73,9 +72,19 @@ const Link = ({active, onClick, children}) => {
 		}}>{children}</a>
 	);
 }
+const TodoApp = () => {
+	return ( 
+	<div>
+		<AddTodo  />
+		<VisibleTodoList  />
+		<Footer />		 	
+	</div>
+	);		
+}
 
 
-
+//////////////////////////////////////////////////////////////////////////////
+////// CONTAINER COMPONENTS //////////////////////////////////////////////////
 const mapStateToLinkProps = (state, ownProps) =>
 {
 	return {active: ownProps.filter === state.visibilityFilter};
@@ -97,7 +106,6 @@ const getVisibleTodos = ( todos, filter) => {
 			return todos.filter(t => !t.completed);
 	}
 }
-
 const mapTodoListStateToProps = (state) =>
 {
 	return { todos: getVisibleTodos(state.todos,state.visibilityFilter) };
@@ -110,18 +118,12 @@ const mapTodoListDispatchToProps = (dispatch) =>
 
 const VisibleTodoList = connect(mapTodoListStateToProps, mapTodoListDispatchToProps)(TodoList);
 
-const TodoApp = () => {
-	return ( 
-	<div>
-		<AddTodo  />
-		<VisibleTodoList  />
-		<Footer />		 	
-	</div>
-	);		
-}
 
-const {Provider} = ReactRedux;
 
+
+///////////////////////////////////////////////////////////
+///// REDUCERS ////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 let todoid = 0;
 const todos = (state = [], action) =>{
 	switch(action.type){
@@ -156,9 +158,12 @@ const visibilityFilter = (	state='SHOW_ALL',	action) => {
 			return state;
 	}	
 };
+//////////////////////////////////////////////////////////////////////
 
+const {Provider} = ReactRedux;
 const {combineReducers} = Redux;
 const todoApp = combineReducers({todos, visibilityFilter});
+
 
 ReactDOM.render(	<Provider store={Redux.createStore(todoApp)}>
 						<TodoApp />
