@@ -78,15 +78,11 @@ const Link = ({active, onClick, children}) => {
 
 const mapStateToLinkProps = (state, ownProps) =>
 {
-	return {
-		active: ownProps.filter === state.visibilityFilter
-	};
+	return {active: ownProps.filter === state.visibilityFilter};
 }
 const mapDispatchToLinkProps = (dispatch, ownProps) =>
 {
-	return {
-		onClick: () => { dispatch({type:'SET_VISIBILITY_FILTER', filter: ownProps.filter});}
-	};
+	return {onClick: () => { dispatch({type:'SET_VISIBILITY_FILTER', filter: ownProps.filter});} };
 }
 const FilterLink = connect(mapStateToLinkProps, mapDispatchToLinkProps)(Link);
 
@@ -102,7 +98,6 @@ const getVisibleTodos = ( todos, filter) => {
 	}
 }
 
-
 const mapTodoListStateToProps = (state) =>
 {
 	return { todos: getVisibleTodos(state.todos,state.visibilityFilter) };
@@ -113,9 +108,7 @@ const mapTodoListDispatchToProps = (dispatch) =>
 	return { onTodoClick: (id) => dispatch({type:'TOGGLE_TODO', id})  };
 }
 
-
 const VisibleTodoList = connect(mapTodoListStateToProps, mapTodoListDispatchToProps)(TodoList);
-
 
 const TodoApp = () => {
 	return ( 
@@ -128,7 +121,6 @@ const TodoApp = () => {
 }
 
 const {Provider} = ReactRedux;
-
 
 let todoid = 0;
 const todos = (state = [], action) =>{
@@ -145,7 +137,7 @@ const todo = (state, action) => {
 		switch(action.type){
 		case 'ADD_TODO':
 			return {id:todoid++, text:action.text, completed:false};
-			
+
 		case 'TOGGLE_TODO':
 			if(action.id !== state.id)
 				return state; 		
